@@ -9,6 +9,7 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	"playtime/storage/utils"
 )
 
 const (
@@ -31,15 +32,20 @@ func (s *Storage) prepareUploadPath(id string) (string, error) {
 	return uploadPath, nil
 }
 
-func (s *Storage) SaveUploadedFile(file *multipart.FileHeader, id, extension string) error {
+func (s *Storage) SaveUploadedFile(file *multipart.FileHeader, id, extension string, isGame bool) error {
 	uploadPath, err := s.prepareUploadPath(id)
 	if err != nil {
 		return err
 	}
 
-	fileName := id
-	if len(extension) != 0 {
-		fileName += "." + extension
+	fileName := ""
+	if (isGame) {
+		fileName = file.Filename
+	} else {
+		fileName = id
+		if len(extension) != 0 {
+			fileName += "." + extension
+		}
 	}
 	fileName = path.Join(uploadPath, fileName)
 
@@ -68,12 +74,27 @@ func (s *Storage) removeUploadedFile(id, extension string) error {
 		return err
 	}
 
-	if len(extension) != 0 {
-		id = id + "." + extension
+	fileName := ""
+	game, err := s.GameGetById(id)
+	if err != nil {
+		fileName = id
+		if len(extension) != 0 {
+			fileName = fileName + "." + extension
+		}
+	} else {
+		fileName := getFileBasename(game.OriginalFileName)
+		if len(extension) != 0 {
+			fileName = fileName + "." + extension
+		} else {
+			fileName = fileName + "." + game.OriginalFileExtension
+		}
 	}
 
-	fullPath := fmt.Sprintf("%s%c%s%c%s", s.config.UploadsPath, os.PathSeparator, uploadPath, os.PathSeparator, id)
+	if len(fileName) == 0 {
+		return errors.New("file name is empty")
+	}
 
+	fullPath := fmt.Sprintf("%s%c%s%c%s", s.config.UploadsPath, os.PathSeparator, uploadPath, os.PathSeparator, fileName)
 	return os.Remove(fullPath)
 }
 

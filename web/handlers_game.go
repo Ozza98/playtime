@@ -83,7 +83,7 @@ func (s *Server) gameUpload(c echo.Context) error {
 			EmulatorSettings:         storage.DefaultEmulatorSettings(""),
 		}
 
-		if err := s.storage.SaveUploadedFile(file, game.Id, ""); err != nil {
+		if err := s.storage.SaveUploadedFile(file, game.Id, "", true); err != nil {
 			return err
 		}
 
@@ -210,7 +210,7 @@ func (s *Server) gameEditSubmit(c echo.Context) error {
 
 	if cover, ok := form.File["cover-image"]; ok && len(cover) > 0 {
 		game.CoverImage = storage.NewId()
-		if err := s.storage.SaveUploadedFile(cover[0], game.CoverImage, ""); err != nil {
+		if err := s.storage.SaveUploadedFile(cover[0], game.CoverImage, "", false); err != nil {
 			return err
 		}
 	}

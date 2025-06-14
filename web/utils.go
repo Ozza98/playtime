@@ -137,7 +137,7 @@ func (s *Server) gameWithData(user *storage.User, game storage.Game) (storage.Ga
 
 	gameWithData := storage.GameWithData{
 		Game:         game,
-		DownloadLink: fmt.Sprintf("%s/%s/%s", UploadsWebRoot, gameUploadPath, game.Id),
+		DownloadLink: fmt.Sprintf("%s/%s/%s", UploadsWebRoot, gameUploadPath, game.OriginalFileName),
 	}
 
 	if len(game.CoverImage) > 0 {
@@ -388,6 +388,18 @@ func getFileExtension(name string) string {
 	}
 
 	return parts[len(parts)-1]
+}
+func getFileBasename(name string) string {
+	if len(name) == 0 {
+		return ""
+	}
+
+	parts := strings.Split(name, ".")
+	if len(parts) == 1 {
+		return ""
+	}
+
+	return strings.Join(parts[0:len(parts)-1], ".")
 }
 
 func startsWith(s, prefix string) bool {
