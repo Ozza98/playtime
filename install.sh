@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PLAYTIME_EJS_REPO_URL=${PLAYTIME_EJS_REPO_URL:-"https://github.com/EmulatorJS/EmulatorJS"}
-PLAYTIME_EJS_REVISION=${PLAYTIME_EJS_REVISION:-"bb51c13eabad53f6ee18828fc80f358a90f6596d"}
+PLAYTIME_EJS_REVISION=${PLAYTIME_EJS_REVISION:-"a796c4a3866652d1b6cb74a2b90e9552955c2b13"}
 PLAYTIME_EJS_CORES_URL=${PLAYTIME_EJS_CORES_URL:-"https://cdn.emulatorjs.org/stable/data/cores"}
 
 #
@@ -15,11 +15,11 @@ npm install --no-fund --ignore-scripts
 git clone "${PLAYTIME_EJS_REPO_URL}" _tmp
 cd _tmp
 git checkout "${PLAYTIME_EJS_REVISION}"
-cd data/minify
+cd minify
 npm install --ignore-scripts
-node index.js
+node run minify
 rm -rf node_modules
-cd ../../..
+cd ../..
 mkdir emulatorjs
 mv _tmp/data/* emulatorjs
 rm -rf _tmp
